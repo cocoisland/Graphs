@@ -1,4 +1,16 @@
-from utils.py import Stack, Queue
+
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
 
 class Graph:
     def __init__(self):
@@ -6,27 +18,32 @@ class Graph:
     def add_vertex(self, vertex):
         self.vertices[vertex] = set()
     def add_edge(self, v1, v2):
-        if v1 in self_vertices and v2 in self.vertices :
+        if v1 in self.vertices and v2 in self.vertices :
             self.vertices[v1].add(v2)
         else:
             raise IndexError("Either vertex {v1} or {v2} does not exist.")
             
-    def dft(self, starting_vertex, destination_vertex):
+    def dft(self, starting_node):
+        final_path = [starting_node]
         # create an empty set to store visited nodes
         visited = set()
         # create a empty stack and push starting vertex path
         s = Stack() 
-        s.push( [starting_vertex])
+        s.push( [starting_node])
         # stack not empty, pop FIFO item
         while s.size() > 0:
             path = s.pop()
-            # check whether current vertex of a path has reached its the target vertex
             v = path[-1]
-            if v == destination_vertex :
-                return(f'child to parent = {path}')
+
             # if that vertex has not been visited, marked it as visited
             if v not in visited:
                 visited.add(v)
+                # add more ancestor to ancestor tree
+                if len(final_path) < len(path) :
+                    final_path = path.copy()
+                # child has two ancestors, choose smaller ancestor
+                elif len(final_path) == len(path) and final_path > path :   # [8,11] > [8,4], final_path=[8,4]
+                    final_path = path.copy()
                 # then get all path leading its neighbor onto stack
                 for neighbor in self.vertices[v]:
                     # create new path to its neighbor
@@ -36,4 +53,27 @@ class Graph:
                     # push onto stack to be looped
                     s.push(path_copy)
 
-        
+
+        if final_path == [starting_node]:
+            return(-1)
+        else:        
+            return(final_path[-1])
+
+    
+
+def earliest_ancestor(relation, starting_child):
+
+    graph = Graph()
+    for parent, child in relation:
+        graph.add_vertex(parent)
+        graph.add_vertex(child)
+
+    for parent, child in relation:
+        graph.add_edge(child, parent)
+
+    #print(list(graph.vertices[3]))
+    #return(graph.dfs1(starting_child, 10))
+    return(graph.dft(starting_child))
+    
+test_ancestors = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
+print(earliest_ancestor(test_ancestors,8))
