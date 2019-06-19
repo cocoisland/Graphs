@@ -1,16 +1,20 @@
+import sys
+sys.path.append('..')
+from graph.util import Stack
+from graph.graph import Graph
 
-class Stack():
-    def __init__(self):
-        self.stack = []
-    def push(self, value):
-        self.stack.append(value)
-    def pop(self):
-        if self.size() > 0:
-            return self.stack.pop()
-        else:
-            return None
-    def size(self):
-        return len(self.stack)
+# class Stack():
+#     def __init__(self):
+#         self.stack = []
+#     def push(self, value):
+#         self.stack.append(value)
+#     def pop(self):
+#         if self.size() > 0:
+#             return self.stack.pop()
+#         else:
+#             return None
+#     def size(self):
+#         return len(self.stack)
 
 class Graph:
     def __init__(self):
@@ -72,7 +76,6 @@ def earliest_ancestor(relation, starting_child):
         graph.add_edge(child, parent)
 
     #print(list(graph.vertices[3]))
-    #return(graph.dfs1(starting_child, 10))
     return(graph.dft(starting_child))
     
 test_ancestors = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
