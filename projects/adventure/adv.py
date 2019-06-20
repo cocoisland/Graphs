@@ -3,6 +3,18 @@ from player import Player
 from world import World
 
 import random
+class Queue():
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
 
 # Load world
 world = World()
@@ -22,7 +34,39 @@ world.printRooms()
 player = Player("Name", world.startingRoom)
 
 # Fill this out
+#player.currentRoom.id, player.currentRoom.getExits(), player.travel(direction)
 traversalPath = []
+graph = {}
+exitDict = {}
+q = Queue()
+q.enqueue( player.currentRoom.id)
+while q.size() > 0:
+    roomId = q.dequeue()
+    print(f' room id {roomId} {graph}')
+    if roomId not in graph:
+        for exit in player.currentRoom.getExits():  
+            exitDict[exit] = '?'
+        graph[roomId]=exitDict
+        print(f' graph = {graph}')
+
+    for nextExit in graph[roomId] :
+        if graph[roomId][nextExit] == '?' :
+            player.travel(nextExit)
+            graph[roomId][nextExit] = player.currentRoom.id
+            q.enqueue(player.currentRoom.id)
+            print(f' for nextExit roomId={roomId} player currentroom={player.currentRoom.id}')
+        
+
+
+        
+
+        # for nextExit in graph[room]:
+        #     print(f'before travel {player.currentRoom.id}')
+        #     player.travel(nextExit)
+        #     print(f'after travel {player.currentRoom.id}')
+
+
+
 
 
 
@@ -34,6 +78,8 @@ visited_rooms.add(player.currentRoom)
 for move in traversalPath:
     player.travel(move)
     visited_rooms.add(player.currentRoom)
+
+print(f'Visited rooms: {visited_rooms}')
 
 if len(visited_rooms) == len(roomGraph):
     print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
@@ -51,5 +97,9 @@ else:
 #     cmds = input("-> ").lower().split(" ")
 #     if cmds[0] in ["n", "s", "e", "w"]:
 #         player.travel(cmds[0], True)
+#     elif cmds[0] == 'l':
+#         world.printRooms()
+#     elif cmds[0] == 'q':
+#         break
 #     else:
 #         print("I did not understand that command.")
