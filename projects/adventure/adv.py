@@ -2,19 +2,9 @@ from room import Room
 from player import Player
 from world import World
 
-import random
-class Queue():
-    def __init__(self):
-        self.queue = []
-    def enqueue(self, value):
-        self.queue.append(value)
-    def dequeue(self):
-        if self.size() > 0:
-            return self.queue.pop(0)
-        else:
-            return None
-    def size(self):
-        return len(self.queue)
+    
+
+
 
 # Load world
 world = World()
@@ -36,37 +26,100 @@ player = Player("Name", world.startingRoom)
 # Fill this out
 #player.currentRoom.id, player.currentRoom.getExits(), player.travel(direction)
 traversalPath = []
-graph = {}
-exitDict = {}
-q = Queue()
-q.enqueue( player.currentRoom.id)
-while q.size() > 0:
-    roomId = q.dequeue()
-    print(f' room id {roomId} {graph}')
-    if roomId not in graph:
-        for exit in player.currentRoom.getExits():  
-            exitDict[exit] = '?'
-        graph[roomId]=exitDict
-        print(f' graph = {graph}')
+graph={}
 
-    for nextExit in graph[roomId] :
-        if graph[roomId][nextExit] == '?' :
-            player.travel(nextExit)
-            graph[roomId][nextExit] = player.currentRoom.id
-            q.enqueue(player.currentRoom.id)
-            print(f' for nextExit roomId={roomId} player currentroom={player.currentRoom.id}')
+def backDirection(direction):
+    if direction == 'n':
+        return('s')
+    elif direction == 's':
+        return('n')
+    elif direction == 'e':
+        return('w')
+    elif direction == 'w':
+        return('e')
+    else:
+        return('Error')
+
+def addGraph( newRoom, exits):
+    #global graph
+    if newRoom not in graph:
+        graph[newRoom] = {}
+        d ={}
+        for exit in exits:
+            d[exit]='?'
+        graph[newRoom]=d
+
+def updateGraph(curRoom,nextRoom, direction):
+    if graph[curRoom][direction] == '?':
+        graph[curRoom][direction]=nextRoom
+
+    # prior = backDirection(direction)
+    # if graph[nextRoom][prior] == '?':
+    #     graph[nextRoom][prior]=curRoom
+
+def toEndNode(curRoom, direction):     
+    while direction in graph[curRoom] :
+        if graph[curRoom][direction] == '?':
+            player.travel(direction)
+            traversalPath.append(direction)
+            prevRoom=curRoom
+            curRoom = player.currentRoom.id
+            exits = player.currentRoom.getExits()
+            
+            addGraph(curRoom, exits)
+            updateGraph(prevRoom, curRoom, direction)
+            
+        else:
+            break
+
+    
+    return(player.currentRoom.id)
+
+def backTrack(curRoom):
+    backDir=None
+    for k in graph[curRoom].keys():
+        if graph[curRoom][k] == '?':
+            backDir = k
+            break
+    #backDir = list(graph[curRoom].keys())[0]
+    if backDir is not None:
+        player.travel(backDir)
+        traversalPath.append(backDir)
+        prevRoom = curRoom
+        curRoom = player.currentRoom.id
+        exits = player.currentRoom.getExits()
+                
+        addGraph(curRoom, exits)
+        #updateGraph(prevRoom, curRoom, direction)
+
+        graph[prevRoom][k] = curRoom
+
+    return(curRoom, backDir)
+    
+
+startingRoom = player.currentRoom.id
+exits = player.currentRoom.getExits()
+addGraph(startingRoom,exits)
+  
+curRoom = startingRoom
+direction=None
+for k in graph[curRoom].keys():
+    if graph[curRoom][k] == '?':
+        direction = k
+        break
+
+while graph[curRoom][direction] == '?':
+
+    curRoom= toEndNode(curRoom, direction)
+    curRoom, direction = backTrack(curRoom)
+    if direction is None:
+        print(f' no backtrack direction')
+        print(f' traverse = {traversalPath}')
+        print(f' graph={graph}')
+        break
+ 
+ 
         
-
-
-        
-
-        # for nextExit in graph[room]:
-        #     print(f'before travel {player.currentRoom.id}')
-        #     player.travel(nextExit)
-        #     print(f'after travel {player.currentRoom.id}')
-
-
-
 
 
 
