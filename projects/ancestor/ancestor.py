@@ -61,7 +61,7 @@ class Graph:
         if final_path == [starting_node]:
             return(-1)
         else:        
-            return(final_path[-1])
+            return(final_path[-1])  # return earliest ancestor
 
     
 
@@ -79,4 +79,4 @@ def earliest_ancestor(relation, starting_child):
     return(graph.dft(starting_child))
     
 test_ancestors = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
-print(earliest_ancestor(test_ancestors,8))
+print(earliest_ancestor(test_ancestors,6))
