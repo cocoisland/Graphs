@@ -23,6 +23,117 @@ player = Player("Name", world.startingRoom)
 
 # Fill this out
 traversalPath = []
+graph={}
+
+
+def backDirection(direction):
+    if direction == 'n':
+        return('s')
+    elif direction == 's':
+        return('n')
+    elif direction == 'e':
+        return('w')
+    elif direction == 'w':
+        return('e')
+    else:
+        return('Error')
+
+def addGraph(curRoom, newRoom, direction, exits):
+    if newRoom not in graph:
+        graph[newRoom] = {}
+        d ={}
+        for exit in exits:
+            d[exit]='?'
+        graph[newRoom]=d
+
+    if curRoom is not None and direction is not None:
+        if graph[curRoom][direction] == '?':
+            graph[curRoom][direction]=newRoom
+
+        prior = backDirection(direction)
+        if graph[newRoom][prior] == '?':
+            graph[newRoom][prior]="bt"
+    
+def updateBtGraph(curRoom,nextRoom, direction):
+    if graph[curRoom][direction] == 'bt' :
+        graph[curRoom][direction] = nextRoom
+    
+
+def toEndNode():
+    curRoom = player.currentRoom.id
+    while checkNewExit() :
+        notVisited = [ k for k in graph[curRoom].keys() if graph[curRoom][k] == '?']
+        direction = notVisited[0]
+        player.travel(direction)
+        traversalPath.append(direction)
+        prevRoom=curRoom
+        curRoom = player.currentRoom.id
+        exits = player.currentRoom.getExits()
+        addGraph(prevRoom, curRoom, direction, exits)
+    return direction
+
+
+def backNode(prevDirection):
+    curRoom = player.currentRoom.id
+    while checkBackNode():
+        if checkNewExit():
+            # found new Exit to visit. Delay back tracking to later
+            break
+        else:
+            backNodeList = [ k for k in graph[curRoom].keys() if graph[curRoom][k] == 'bt']
+            if len(backNodeList) > 1:
+                # when more than one back node is found, reverse last direction to back track
+                direction = backDirection(prevDirection)
+                player.travel(direction)
+                traversalPath.append(direction)
+                prevRoom = curRoom
+                curRoom = player.currentRoom.id
+                updateBtGraph(prevRoom, curRoom, direction)
+                # print(f' BackNode Error: More than one back node is found in room={curRoom}.')
+                # print(f' traversalPath={traversalPath}')
+                # print(f' graph={graph[curRoom]}')
+                # input('here')
+            else:
+                direction=backNodeList[0]
+                player.travel(direction)
+                traversalPath.append(direction)
+                prevRoom = curRoom
+                curRoom = player.currentRoom.id
+                updateBtGraph(prevRoom, curRoom, direction)
+    
+
+def checkBackNode():
+    curRoom = player.currentRoom.id
+    if 'bt' in graph[curRoom].values():
+        return True
+    else: 
+        return False
+
+def checkNewExit():
+    curRoom = player.currentRoom.id
+    if '?' in graph[curRoom].values():
+        return True
+    else:
+        return False
+    
+def checkAllExit():
+    curRoom = player.currentRoom.id
+    if '?' in graph[curRoom].values() or 'bt' in graph[curRoom].values():
+        return True
+    else:
+        return False
+
+
+curRoom = player.currentRoom.id
+exits = player.currentRoom.getExits()
+addGraph(None, curRoom,None, exits)
+
+while checkAllExit():
+    direction = toEndNode()
+    backNode(direction)
+    
+    #print(f' direction {direction} {curRoom} traver={traversalPath} graph={graph}')
+    
 
 
 

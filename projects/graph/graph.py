@@ -111,6 +111,8 @@ class Graph:
         """
         # Create an empty set to store visited nodes
         visited = set()
+        # Create a paths variable to store destination path
+        paths=[]
         # Create an empty Queue and enqueue A PATH TO the starting vertex
         q = Queue()
         path = [starting_vertex]
@@ -123,7 +125,8 @@ class Graph:
             v = path[-1]
             # IF VERTEX = TARGET, RETURN PATH
             if v == destination_vertex :
-                return(f'BFS shortest path {path}')
+                paths.append(path)
+                #return(f'BFS shortest path {path}')
             # If that vertex has not been visited...
             if v not in visited:
                 # Mark it as visited
@@ -136,6 +139,9 @@ class Graph:
                     path_copy.append(neighbor)
                     # Enqueue copy
                     q.enqueue(path_copy)
+                    
+        return paths
+        
 
     def dfs(self, starting_vertex, destination_vertex):
         """
