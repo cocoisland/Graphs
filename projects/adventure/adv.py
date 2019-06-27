@@ -132,7 +132,7 @@ while checkAllExit():
     direction = toEndNode()
     backNode(direction)
     
-    #print(f' direction {direction} {curRoom} traver={traversalPath} graph={graph}')
+
     
 
 
