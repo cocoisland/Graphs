@@ -28,12 +28,15 @@ class SocialGraph:
         Creates a bi-directional friendship
         """
         if userID == friendID:
-            print("WARNING: You cannot be friends with yourself")
+            #print("WARNING: You cannot be friends with yourself")
+            pass
         elif friendID in self.friendships[userID] or userID in self.friendships[friendID]:
-            print("WARNING: Friendship already exists")
+            #print("WARNING: Friendship already exists")
+            pass
         else:
             self.friendships[userID].add(friendID)
             self.friendships[friendID].add(userID)
+            return True
 
     def addUser(self, name):
         """
@@ -86,6 +89,28 @@ class SocialGraph:
             friendId = all[i][1]
             self.addFriendship(userId, friendId)
         print(f' hopeful friendship {self.friendships}')
+
+    def populateGraphLinear(self, numUsers, avgFriendships):
+        """
+        O(n) - 
+        """
+        # Reset graph
+        self.lastID = 0
+        self.users = {}
+        self.friendships = {}
+        # Add users
+        for i in range(1,numUsers+1):
+            self.addUser("User"+ str(i))
+        # randint to pick possible friendship.
+        totalFriendship = (numUsers * avgFriendships) // 2
+        targetFriendship = 0
+        collisions=0
+        while targetFriendship < totalFriendship:
+            randUserId = random.randint(1, self.lastID) # randint inclusive
+            randFriend = random.randint(1, self.lastID)
+            self.addFriendship(randUserId, rangFriend)
+
+
 
     def getAllSocialPaths(self, userID):
         """
