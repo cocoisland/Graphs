@@ -69,6 +69,7 @@ def toEndNode():
         prevRoom=curRoom
         curRoom = player.currentRoom.id
         exits = player.currentRoom.getExits()
+        #exits.sort()   # changing the order of direction to east first, make no difference to num of steps.
         addGraph(prevRoom, curRoom, direction, exits)
     return direction
 
@@ -126,13 +127,16 @@ def checkAllExit():
 
 curRoom = player.currentRoom.id
 exits = player.currentRoom.getExits()
+#exits=sorted(exits) # changing direction east first, make no difference to num of 1004 steps.
+# print(f' exit = {exits} ')
+# input('enter')
 addGraph(None, curRoom,None, exits)
 
 while checkAllExit():
     direction = toEndNode()
     backNode(direction)
     
-    #print(f' direction {direction} {curRoom} traver={traversalPath} graph={graph}')
+
     
 
 
